@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backend with JavaScript — Course Summary</title>
+<meta name="description" content="A friendly course summary covering JavaScript, Express, and databases. The basics that actually stick.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --panel: #0d1117;
+    --panel2: #111820;
+    --pink: #ff2d78;
+    --cyan: #00e5ff;
+    --green: #39ff14;
+    --yellow: #ffe000;
+    --purple: #c084fc;
+    --orange: #ff8c42;
+    --text: #d0e8f0;
+    --muted: #7a9aaa;
+    --border: #1e3a4a;
+    --glow-pink: 0 0 8px #ff2d7880, 0 0 20px #ff2d7830;
+    --glow-cyan: 0 0 8px #00e5ff80, 0 0 20px #00e5ff30;
+    --glow-green: 0 0 8px #39ff1480, 0 0 20px #39ff1430;
+    --mono: 'Share Tech Mono', monospace;
+    --display: 'Orbitron', sans-serif;
+    --body: 'Exo 2', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 3.5rem 1rem 2rem;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    background: radial-gradient(ellipse at 50% 0%, #0e1f2e 0%, var(--bg) 70%);
+  }
+
+  .header-tag {
+    font-family: var(--mono);
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(1.9rem, 7vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: 0.04em;
+  }
+
+  h1 .back { color: var(--pink); text-shadow: var(--glow-pink); }
+  h1 .with { color: var(--text); font-size: 0.45em; display: block; margin: 0.25em 0; font-weight: 700; }
+  h1 .js { color: var(--cyan); text-shadow: var(--glow-cyan); }
+
+  .tagline {
+    margin-top: 1.25rem;
+    font-family: var(--mono);
+    color: var(--yellow);
+    font-size: clamp(0.75rem, 2.5vw, 1rem);
+    letter-spacing: 0.15em;
+  }
+
+  .tagline::before, .tagline::after { content: '>> '; color: var(--green); }
+  .tagline::after { content: ' <<'; }
+
+  .byline {
+    margin-top: 1rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  .byline span { color: var(--cyan); }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(8,12,16,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  nav a {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    transition: all 0.2s;
+    letter-spacing: 0.08em;
+  }
+
+  nav a:hover {
+    color: var(--cyan);
+    border-color: var(--cyan);
+    text-shadow: var(--glow-cyan);
+    box-shadow: var(--glow-cyan);
+  }
+
+  /* ── INTRO ── */
+  .intro {
+    max-width: 720px;
+    margin: 2.5rem auto 0;
+    padding: 0 1.25rem;
+    text-align: center;
+  }
+  .intro p {
+    font-size: 1rem;
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .intro p + p { margin-top: 0.85rem; }
+  .intro .lead {
+    font-size: 1.1rem;
+    color: var(--text);
+  }
+  .intro em { color: var(--cyan); font-style: normal; }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 1rem 4rem;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  /* ── PART HEADINGS ── */
+  .part-heading {
+    grid-column: 1 / -1;
+    margin-top: 1.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+  .part-heading:first-child { margin-top: 0; }
+
+  .part-num {
+    font-family: var(--mono);
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+  }
+  .part-title {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    letter-spacing: 0.05em;
+  }
+  .part-heading.js .part-title { color: var(--yellow); }
+  .part-heading.express .part-title { color: var(--orange); text-shadow: 0 0 8px #ff8c4280; }
+  .part-heading.db .part-title { color: var(--green); text-shadow: var(--glow-green); }
+  .part-blurb {
+    grid-column: 1 / -1;
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-top: -0.25rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.6;
+    max-width: 760px;
+  }
+
+  /* ── SECTION HEADINGS ── */
+  .section-title {
+    font-family: var(--display);
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid;
+  }
+
+  .section-title.pink { color: var(--pink); border-color: var(--pink); text-shadow: var(--glow-pink); }
+  .section-title.cyan { color: var(--cyan); border-color: var(--cyan); text-shadow: var(--glow-cyan); }
+  .section-title.green { color: var(--green); border-color: var(--green); text-shadow: var(--glow-green); }
+  .section-title.yellow { color: var(--yellow); border-color: var(--yellow); }
+  .section-title.purple { color: var(--purple); border-color: var(--purple); }
+  .section-title.orange { color: var(--orange); border-color: var(--orange); }
+
+  .sub-title {
+    font-family: var(--display);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--muted);
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .card.pink::before { background: var(--pink); box-shadow: var(--glow-pink); }
+  .card.cyan::before { background: var(--cyan); box-shadow: var(--glow-cyan); }
+  .card.green::before { background: var(--green); box-shadow: var(--glow-green); }
+  .card.yellow::before { background: var(--yellow); }
+  .card.purple::before { background: var(--purple); }
+  .card.orange::before { background: var(--orange); }
+
+  .card p { font-size: 0.92rem; }
+  .card p + p { margin-top: 0.65rem; }
+
+  /* ── GRIDS ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  @media (max-width: 700px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  @media (max-width: 920px) { .three-col { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .three-col { grid-template-columns: 1fr; } }
+
+  /* asymmetric: 2/3 + 1/3 */
+  .split-2-1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+  }
+  @media (max-width: 760px) {
+    .split-2-1 { grid-template-columns: 1fr; }
+  }
+  .split-1-2 {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+  }
+  @media (max-width: 760px) {
+    .split-1-2 { grid-template-columns: 1fr; }
+  }
+
+  /* ── CODE BLOCKS ── */
+  pre, code {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+  }
+
+  .code-block {
+    background: #060a0e;
+    border: 1px solid #1a2e3a;
+    border-radius: 3px;
+    padding: 0.85rem 1rem;
+    overflow-x: auto;
+    margin-top: 0.75rem;
+  }
+  .code-block pre { line-height: 1.55; }
+  .code-block .k { color: var(--purple); }
+  .code-block .s { color: var(--green); }
+  .code-block .c { color: #3a6070; }
+  .code-block .f { color: var(--yellow); }
+  .code-block .v { color: var(--cyan); }
+  .code-block .p { color: var(--pink); }
+
+  code.inline {
+    background: #060a0e;
+    border: 1px solid #1a2e3a;
+    border-radius: 2px;
+    padding: 0.05rem 0.35rem;
+    color: var(--cyan);
+    font-size: 0.82em;
+  }
+
+  /* ── HIGHLIGHTS ── */
+  .hl-pink { color: var(--pink); }
+  .hl-cyan { color: var(--cyan); }
+  .hl-green { color: var(--green); }
+  .hl-yellow { color: var(--yellow); }
+  .hl-purple { color: var(--purple); }
+  .hl-orange { color: var(--orange); }
+
+  /* ── PILLS ── */
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+  .pill {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid;
+    letter-spacing: 0.05em;
+  }
+  .pill.pink { color: var(--pink); border-color: var(--pink); }
+  .pill.cyan { color: var(--cyan); border-color: var(--cyan); }
+  .pill.green { color: var(--green); border-color: var(--green); }
+  .pill.yellow { color: var(--yellow); border-color: var(--yellow); }
+  .pill.purple { color: var(--purple); border-color: var(--purple); }
+  .pill.orange { color: var(--orange); border-color: var(--orange); }
+
+  /* ── DT TABLE ── */
+  .dt-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+  .dt-table tr:hover td { background: #0f1e28; }
+  .dt-table td {
+    padding: 0.35rem 0;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    border-bottom: 1px solid #0d191f;
+  }
+  .dt-table td:first-child { color: var(--pink); width: 7rem; }
+  .dt-table td:last-child { color: var(--muted); }
+
+  /* ── HTTP METHOD BADGES ── */
+  .http-row { display: flex; flex-direction: column; gap: 0.85rem; margin-top: 0.5rem; }
+  .http-badge { display: flex; align-items: flex-start; gap: 0.85rem; }
+  .method {
+    font-family: var(--display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.35rem 0.65rem;
+    border-radius: 3px;
+    min-width: 3.6rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .method.get { background: var(--green); color: #000; }
+  .method.post { background: var(--pink); color: #fff; }
+  .method-desc { font-size: 0.85rem; }
+  .method-desc strong { color: var(--yellow); font-family: var(--mono); font-size: 0.78rem; }
+
+  /* ── STATUS CODES ── */
+  .status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-top: 0.5rem;
+  }
+  .status-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.85rem;
+  }
+  .status-code {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 1.1rem;
+    min-width: 3rem;
+    flex-shrink: 0;
+  }
+  .status-code.ok { color: var(--green); text-shadow: var(--glow-green); }
+  .status-code.bad { color: var(--yellow); }
+  .status-code.err { color: var(--pink); text-shadow: var(--glow-pink); }
+  .status-desc { font-size: 0.88rem; }
+
+  /* ── MVC FLOW ── */
+  .mvc-flow {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    margin-top: 0.75rem;
+  }
+  .mvc-box {
+    width: 100%;
+    max-width: 180px;
+    padding: 0.45rem 0.8rem;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 3px;
+  }
+  .mvc-box.controller { background: var(--pink); color: #fff; }
+  .mvc-box.model { background: var(--yellow); color: #000; }
+  .mvc-box.view { background: var(--cyan); color: #000; }
+  .mvc-arrow { font-size: 1rem; color: var(--muted); margin-left: 3.5rem; }
+
+  /* ── FLOW LIST (control flow) ── */
+  .flow-list { display: flex; flex-direction: column; gap: 0.65rem; margin-top: 0.5rem; }
+  .flow-item { display: flex; align-items: flex-start; gap: 0.85rem; }
+  .flow-kw {
+    font-family: var(--display);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 2px;
+    flex-shrink: 0;
+    min-width: 3.6rem;
+    text-align: center;
+  }
+  .flow-kw.if-kw { background: var(--cyan); color: #000; }
+  .flow-kw.sw-kw { background: var(--yellow); color: #000; }
+  .flow-kw.lp-kw { background: var(--pink); color: #fff; }
+  .flow-desc { font-size: 0.85rem; }
+
+  /* ── KEY/VALUE BOX (relationships, etc) ── */
+  .kv-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin-top: 0.5rem;
+  }
+  .kv-item {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--cyan);
+    border-radius: 0 3px 3px 0;
+    padding: 0.65rem 0.85rem;
+  }
+  .kv-item:nth-child(2) { border-left-color: var(--pink); }
+  .kv-item:nth-child(3) { border-left-color: var(--yellow); }
+  .kv-key {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: 0.15rem;
+    letter-spacing: 0.05em;
+  }
+  .kv-item:nth-child(2) .kv-key { color: var(--pink); }
+  .kv-item:nth-child(3) .kv-key { color: var(--yellow); }
+  .kv-val { font-size: 0.85rem; color: var(--text); }
+
+  /* ── CALLOUT ── */
+  .callout {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    background: #0c1a14;
+    border: 1px solid #1f3a2a;
+    border-left: 3px solid var(--green);
+    color: var(--green);
+    padding: 0.55rem 0.8rem;
+    border-radius: 0 3px 3px 0;
+    margin-top: 0.85rem;
+  }
+  .callout.yellow {
+    background: #1a1500;
+    border-color: #2a2200;
+    border-left-color: var(--yellow);
+    color: var(--yellow);
+  }
+  .callout.pink {
+    background: #1a0a14;
+    border-color: #2a1220;
+    border-left-color: var(--pink);
+    color: var(--pink);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  footer span.tag { color: var(--green); }
+  footer .footer-line { margin-bottom: 0.4rem; }
+  footer .author { color: var(--cyan); }
+
+  .cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 1em;
+    background: var(--cyan);
+    margin-left: 0.2em;
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card { animation: fadeUp 0.4s ease both; }
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.1s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  section { animation: fadeUp 0.5s ease both; }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">// course summary · web dev</div>
+  <h1>
+    <span class="back">BACKEND</span>
+    <span class="with">with</span>
+    <span class="js">JAVASCRIPT</span>
+  </h1>
+  <p class="tagline">The basics that actually stick</p>
+  <p class="byline">by <span>Sara Gramstad</span> · 2026-05-08</p>
+</header>
+
+<nav>
+  <a href="#javascript">JavaScript</a>
+  <a href="#express">Express</a>
+  <a href="#database">Database</a>
+</nav>
+
+<div class="intro">
+  <p class="lead">This is a quick tour of what we covered in the course — JavaScript fundamentals, how Express handles the back-end, and how databases store all the stuff that matters.</p>
+  <p>Nothing fancy, just the bits worth remembering. If you're a classmate skimming for revision or a friend wondering what I've been up to — this is it. <em>Make sense?</em> Cool, let's go.</p>
+</div>
+
+<main>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- PART 01 — JAVASCRIPT                     -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="part-heading js" id="javascript">
+    <span class="part-num">// 01</span>
+    <span class="part-title">JavaScript</span>
+  </div>
+  <p class="part-blurb">The language everything's built on. A few quirks, a handful of rules, and once they click — most of the weirdness goes away.</p>
+
+  <!-- ROW: Datatypes + var/let/const + undefined/null -->
+  <section>
+    <div class="three-col">
+
+      <div class="card pink">
+        <div class="section-title pink">// Datatypes</div>
+        <p>JavaScript has eight basic types. Most of the time you'll only touch the first three.</p>
+        <table class="dt-table">
+          <tr><td>string</td><td>'text'</td></tr>
+          <tr><td>number</td><td>42</td></tr>
+          <tr><td>boolean</td><td>true / false</td></tr>
+          <tr><td>undefined</td><td>let x;</td></tr>
+          <tr><td>null</td><td>null</td></tr>
+          <tr><td>object</td><td>{ key: 'value' }</td></tr>
+          <tr><td>array</td><td>[1, 2, 3]</td></tr>
+          <tr><td>symbol</td><td>Symbol('id')</td></tr>
+        </table>
+        <p style="margin-top:0.85rem; font-size:0.85rem; color:var(--muted)">Object groups stuff together. Array is technically a type of object, just for lists. Symbol is the weird one — unique IDs, you'll rarely need it.</p>
+      </div>
+
+      <div class="card yellow">
+        <div class="section-title yellow">// var / let / const</div>
+        <p>Three ways to declare a variable. They behave differently and yes, that matters.</p>
+        <table class="dt-table" style="margin-bottom:0.75rem">
+          <tr><td><span class="hl-pink">var</span></td><td>function scoped (old, avoid)</td></tr>
+          <tr><td><span class="hl-cyan">let</span></td><td>block scoped (can change)</td></tr>
+          <tr><td><span class="hl-green">const</span></td><td>block scoped (can't reassign)</td></tr>
+        </table>
+        <p style="font-size:0.85rem"><span class="hl-pink">var</span> is the old one. It's got function scope and weirdly unpredictable behaviour, so we don't really use it anymore.</p>
+        <p style="font-size:0.85rem"><span class="hl-cyan">let</span> is for when you know the value's going to change. <span class="hl-green">const</span> is when it shouldn't.</p>
+        <div class="callout">// rule of thumb: const by default, let when you need it</div>
+      </div>
+
+      <div class="card cyan">
+        <div class="section-title cyan">// undefined vs null</div>
+        <p>Both mean "nothing", but the difference is intention.</p>
+        <p><span class="hl-yellow">undefined</span> = a variable exists but hasn't been given a value. JavaScript handed it to you. If you write <code class="inline">let x;</code> — that's undefined.</p>
+        <p><span class="hl-pink">null</span> = you decided the value should be empty. You handed it over on purpose.</p>
+        <div class="callout yellow">// undefined is "not set yet". null is a deliberate "nothing".</div>
+
+        <div class="section-title cyan" style="margin-top:1.25rem">// === vs ==</div>
+        <p style="font-size:0.85rem"><span class="hl-pink">==</span> compares values but quietly converts types if it has to. Sometimes that's fine. Often it's a bug waiting to happen.</p>
+        <p style="font-size:0.85rem"><span class="hl-green">===</span> compares value <em>and</em> type. No magic conversions.</p>
+        <div class="code-block">
+<pre><span class="s">'5'</span> <span class="k">==</span>  5  <span class="c">// true (??)</span>
+<span class="s">'5'</span> <span class="k">===</span> 5  <span class="c">// false</span></pre>
+        </div>
+        <div class="callout" style="margin-top:0.7rem">// use === always. you'll thank yourself later.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ROW: Functions + Constructors + use strict -->
+  <section>
+    <div class="split-2-1">
+
+      <div class="card purple">
+        <div class="section-title purple">// Functions</div>
+        <p>A function is reusable code. You give it some inputs, it gives you a result. The whole point is to not repeat the same logic in five different places.</p>
+        <p>Three common ways to write one:</p>
+        <div class="code-block">
+<pre><span class="c">// 1. function declaration</span>
+<span class="k">function</span> <span class="f">add</span>(a, b) {
+  <span class="k">return</span> a + b;
+}
+
+<span class="c">// 2. function expression</span>
+<span class="k">const</span> <span class="v">add</span> = <span class="k">function</span>(a, b) {
+  <span class="k">return</span> a + b;
+};
+
+<span class="c">// 3. arrow function (modern, short)</span>
+<span class="k">const</span> <span class="v">add</span> = (a, b) => a + b;</pre>
+        </div>
+
+        <div class="sub-title">Constructor function</div>
+        <p style="font-size:0.88rem">A template for making lots of objects with the same shape. You call it with <span class="hl-yellow">new</span> and get a fresh instance every time. Handy when you've got a bunch of things that all need the same properties and behaviour.</p>
+      </div>
+
+      <div class="card green">
+        <div class="section-title green">// "use strict"</div>
+        <p>A mode that makes JavaScript stricter — and honestly, kinder. It catches dumb mistakes early, like using a variable you forgot to declare.</p>
+        <p>In bigger projects it's basically free safety. Toss it at the top of the file and move on.</p>
+        <div class="code-block">
+<pre><span class="s">'use strict'</span>;</pre>
+        </div>
+
+        <div class="section-title green" style="margin-top:1.25rem">// Array vs Map</div>
+        <p style="font-size:0.88rem">An <span class="hl-pink">array</span> is an ordered list of values. Good for when order matters or you're iterating.</p>
+        <p style="font-size:0.88rem">A <span class="hl-yellow">Map</span> stores key→value pairs. Better when you need to grab a value fast by its key.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ROW: Callback + Modules + Control flow -->
+  <section>
+    <div class="three-col">
+
+      <div class="card orange">
+        <div class="section-title orange">// Callbacks</div>
+        <p>A callback is a function you pass into another function, that gets called later. Super common in async code — like running something after data comes back from a server.</p>
+        <div class="code-block">
+<pre><span class="f">getData</span>(<span class="k">function</span>(data) {
+  <span class="c">// runs once data</span>
+  <span class="c">// is ready</span>
+});</pre>
+        </div>
+        <p style="margin-top:0.85rem; font-size:0.85rem">It's the original "do this thing, but later" pattern.</p>
+      </div>
+
+      <div class="card pink">
+        <div class="section-title pink">// Modules</div>
+        <p>Splitting your code into separate files. Instead of one huge mess, you <span class="hl-cyan">export</span> the bits you want to share and <span class="hl-yellow">import</span> them where you need them.</p>
+        <div class="code-block">
+<pre><span class="c">// math.js</span>
+<span class="k">export function</span> <span class="f">add</span>(a, b) {
+  <span class="k">return</span> a + b;
+}
+
+<span class="c">// app.js</span>
+<span class="k">import</span> { add } <span class="k">from</span> <span class="s">'./math.js'</span>;</pre>
+        </div>
+        <p style="margin-top:0.85rem; font-size:0.85rem">Cleaner. Easier to maintain. Reusable. Win-win-win.</p>
+      </div>
+
+      <div class="card cyan">
+        <div class="section-title cyan">// Control flow</div>
+        <p>How you decide what runs, and when. Three tools do most of the heavy lifting:</p>
+        <div class="flow-list" style="margin-top:0.85rem">
+          <div class="flow-item">
+            <div class="flow-kw if-kw">IF</div>
+            <div class="flow-desc"><span class="hl-cyan">if / else</span> — run code if a condition is true or false.</div>
+          </div>
+          <div class="flow-item">
+            <div class="flow-kw sw-kw">SWITCH</div>
+            <div class="flow-desc"><span class="hl-yellow">switch</span> — when there are several possible cases.</div>
+          </div>
+          <div class="flow-item">
+            <div class="flow-kw lp-kw">LOOP</div>
+            <div class="flow-desc"><span class="hl-pink">for / while</span> — repeat code while a condition holds.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- PART 02 — EXPRESS                        -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="part-heading express" id="express">
+    <span class="part-num">// 02</span>
+    <span class="part-title">Express</span>
+  </div>
+  <p class="part-blurb">A web framework for Node.js. It takes the boring parts of building a back-end and just handles them — routing, requests, responses. You bring the logic.</p>
+
+  <!-- ROW: What is Express + MVC -->
+  <section>
+    <div class="two-col">
+
+      <div class="card orange">
+        <div class="section-title orange">// What Express does</div>
+        <p>Express.js is the framework you use on top of Node.js to build back-ends and APIs. Without it, you'd be wiring up routing and request handling from scratch — and nobody wants that.</p>
+        <p>The flow's simple: a request comes in, Express matches it to the right route, runs whatever middleware is in the way, hits your handler function, and sends a response back. That's the whole job.</p>
+        <div class="pill-row">
+          <span class="pill orange">Node.js</span>
+          <span class="pill orange">Express</span>
+          <span class="pill orange">Routing</span>
+          <span class="pill orange">APIs</span>
+        </div>
+        <div class="code-block" style="margin-top:1rem">
+<pre><span class="c">// GET HOME PAGE</span>
+<span class="v">router</span>.<span class="f">get</span>(<span class="s">"/"</span>, <span class="k">function</span>(req, res) {
+  <span class="c">// handle logic</span>
+  <span class="c">// fetch data if needed</span>
+  res.<span class="f">send</span>(<span class="s">'index.html'</span>);
+});</pre>
+        </div>
+      </div>
+
+      <div class="card purple">
+        <div class="section-title purple">// MVC — Model · View · Controller</div>
+        <p>A way to keep your code from turning into spaghetti. Three roles, each handling one thing.</p>
+        <div style="display:grid; grid-template-columns:auto 1fr; gap:1rem; align-items:start; margin-top:0.85rem;">
+          <div class="mvc-flow">
+            <div style="font-family:var(--mono); font-size:0.72rem; color:var(--muted); margin-bottom:0.3rem">Request ↓</div>
+            <div class="mvc-box controller">Controller</div>
+            <div class="mvc-arrow">↓</div>
+            <div class="mvc-box model">Model</div>
+            <div class="mvc-arrow">↓</div>
+            <div class="mvc-box view">View</div>
+          </div>
+          <div>
+            <p style="font-size:0.85rem"><span class="hl-pink">Controller</span> — the middleman. Takes the request, asks the Model for data, hands the result to the View.</p>
+            <p style="font-size:0.85rem"><span class="hl-yellow">Model</span> — handles data and database stuff. Users, products, whatever.</p>
+            <p style="font-size:0.85rem"><span class="hl-cyan">View</span> — what the user actually sees. Usually HTML.</p>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:1rem">// separation of concerns = code you can actually live with</div>
+
+        <div class="sub-title">Layouts &amp; partials</div>
+        <p style="font-size:0.88rem">A <span class="hl-pink">layout</span> is the shared frame — header, footer, the stuff that's the same on every page. A <span class="hl-cyan">partial</span> is a reusable chunk like a navbar or a card you drop in wherever. Less duplication, less pain.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ROW: Middleware + HTTP methods + status codes -->
+  <section>
+    <div class="three-col">
+
+      <div class="card yellow">
+        <div class="section-title yellow">// Middleware</div>
+        <p>Middleware is a function that sits between the request and the response. Logging, auth, parsing data — anything you want to happen on the way in.</p>
+        <div class="code-block">
+<pre><span class="v">app</span>.<span class="f">use</span>((req, res, next) => {
+  console.<span class="f">log</span>(<span class="s">"Request received"</span>);
+  <span class="f">next</span>();
+});</pre>
+        </div>
+        <p style="margin-top:0.85rem; font-size:0.85rem"><code class="inline">next()</code> hands the request along to the next step. That's how you stack logic, one piece at a time.</p>
+      </div>
+
+      <div class="card cyan">
+        <div class="section-title cyan">// HTTP methods</div>
+        <div class="http-row">
+          <div class="http-badge">
+            <div class="method get">GET</div>
+            <div class="method-desc">
+              Fetch data. Doesn't change anything on the server. Loading a page = GET.
+              <br><strong>GET = read</strong>
+            </div>
+          </div>
+          <div class="http-badge">
+            <div class="method post">POST</div>
+            <div class="method-desc">
+              Send data to the server. Submitting a form, creating something new.
+              <br><strong>POST = send / create</strong>
+            </div>
+          </div>
+        </div>
+        <p style="margin-top:1rem; font-size:0.85rem; color:var(--muted)">GET to grab. POST to give. That's most of it.</p>
+      </div>
+
+      <div class="card pink">
+        <div class="section-title pink">// Status codes</div>
+        <p>The server's way of telling you how it went. Three you'll see constantly:</p>
+        <div class="status-list">
+          <div class="status-item">
+            <div class="status-code ok">200</div>
+            <div class="status-desc">All good. It worked.</div>
+          </div>
+          <div class="status-item">
+            <div class="status-code bad">404</div>
+            <div class="status-desc">Not found. The thing you asked for doesn't exist.</div>
+          </div>
+          <div class="status-item">
+            <div class="status-code err">500</div>
+            <div class="status-desc">Server error. Something broke on their end.</div>
+          </div>
+        </div>
+        <div class="callout pink" style="margin-top:0.85rem">// the first digit tells you the vibe: 2xx ok, 4xx your fault, 5xx their fault</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- PART 03 — DATABASE                       -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="part-heading db" id="database">
+    <span class="part-num">// 03</span>
+    <span class="part-title">Database</span>
+  </div>
+  <p class="part-blurb">Where the actual stuff lives. Users, orders, posts, all of it. Relational databases keep data in tables — and SQL is how you talk to them.</p>
+
+  <!-- ROW: What is a relational DB + SQL basics -->
+  <section>
+    <div class="split-1-2">
+
+      <div class="card green">
+        <div class="section-title green">// Relational DB</div>
+        <p>Stores data in tables — rows and columns, like a tidy spreadsheet. The "relational" part means tables can be linked to each other. Users to orders, posts to authors, all that.</p>
+        <p>Good fit when your data has clear structure and clear connections.</p>
+        <div class="pill-row">
+          <span class="pill green">Tables</span>
+          <span class="pill green">Rows</span>
+          <span class="pill green">Relations</span>
+        </div>
+
+        <div class="section-title green" style="margin-top:1.25rem">// SQL</div>
+        <p style="font-size:0.88rem"><strong>S</strong>tructured <strong>Q</strong>uery <strong>L</strong>anguage. The language you use to talk to a relational database. Read, write, update, delete — all of it goes through SQL.</p>
+      </div>
+
+      <div class="card cyan">
+        <div class="section-title cyan">// The everyday commands</div>
+        <p>You'll spend most of your time on these four:</p>
+        <div class="code-block">
+<pre><span class="c">// READ</span>
+<span class="k">SELECT</span> * <span class="k">FROM</span> <span class="v">users</span>;
+
+<span class="c">// CREATE</span>
+<span class="k">INSERT INTO</span> <span class="v">users</span> (name)
+  <span class="k">VALUES</span> (<span class="s">'Sara'</span>);
+
+<span class="c">// UPDATE</span>
+<span class="k">UPDATE</span> <span class="v">users</span>
+  <span class="k">SET</span> name = <span class="s">'Alex'</span>
+  <span class="k">WHERE</span> id = <span class="s">1</span>;
+
+<span class="c">// DELETE</span>
+<span class="k">DELETE FROM</span> <span class="v">users</span>
+  <span class="k">WHERE</span> id = <span class="s">1</span>;</pre>
+        </div>
+        <p style="margin-top:0.85rem; font-size:0.85rem; color:var(--muted)">Then there's <span class="hl-pink">CREATE</span> / <span class="hl-pink">DROP</span> / <span class="hl-pink">ALTER</span> for the tables themselves — making them, removing them, changing them.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ROW: Primary key + Foreign key -->
+  <section>
+    <div class="two-col">
+
+      <div class="card pink">
+        <div class="section-title pink">// Primary key</div>
+        <p>A primary key uniquely identifies each row in a table. No two rows can have the same value in that column. Almost always an <code class="inline">id</code> field.</p>
+        <div class="code-block">
+<pre><span class="k">CREATE TABLE</span> <span class="v">users</span> (
+  id <span class="k">INT PRIMARY KEY</span>,
+  name <span class="k">VARCHAR</span>(<span class="s">100</span>)
+);</pre>
+        </div>
+      </div>
+
+      <div class="card yellow">
+        <div class="section-title yellow">// Foreign key</div>
+        <p>A foreign key is how you connect two tables. It points at the primary key of another table — saying "this row belongs to that row over there."</p>
+        <div class="code-block">
+<pre><span class="k">CREATE TABLE</span> <span class="v">orders</span> (
+  id <span class="k">INT PRIMARY KEY</span>,
+  user_id <span class="k">INT</span>,
+  <span class="k">FOREIGN KEY</span> (user_id)
+    <span class="k">REFERENCES</span> <span class="v">users</span>(id)
+);</pre>
+        </div>
+        <p style="margin-top:0.85rem; font-size:0.85rem">Here, every order is tied to a user via <code class="inline">user_id</code>. That's the relationship.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ROW: Relationships + Cascading delete + Index -->
+  <section>
+    <div class="three-col">
+
+      <div class="card purple">
+        <div class="section-title purple">// Relationships</div>
+        <p>Three flavours, and you'll see all of them.</p>
+        <div class="kv-list">
+          <div class="kv-item">
+            <div class="kv-key">ONE-TO-MANY</div>
+            <div class="kv-val">One row links to many in another table. One user, many orders.</div>
+          </div>
+          <div class="kv-item">
+            <div class="kv-key">MANY-TO-MANY</div>
+            <div class="kv-val">Many rows link to many. Usually solved with a join table in the middle.</div>
+          </div>
+          <div class="kv-item">
+            <div class="kv-key">ONE-TO-ONE</div>
+            <div class="kv-val">A single row pairs with exactly one other. A user and their profile.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card pink">
+        <div class="section-title pink">// Cascading delete</div>
+        <p>When you delete a row, anything connected to it gets deleted too — automatically. You set it up on the foreign key.</p>
+        <div class="code-block">
+<pre><span class="k">FOREIGN KEY</span> (user_id)
+  <span class="k">REFERENCES</span> <span class="v">users</span>(id)
+  <span class="k">ON DELETE CASCADE</span></pre>
+        </div>
+        <p style="margin-top:0.85rem; font-size:0.85rem">Stops you from leaving "orphan" rows lying around — orders pointing at users that don't exist anymore. Tidy.</p>
+      </div>
+
+      <div class="card cyan">
+        <div class="section-title cyan">// Index</div>
+        <p>An index is like the index in the back of a book. Instead of reading every row, the database jumps straight to the right one.</p>
+        <p>Big tables = slow searches without indexes. Add one on a column you query a lot, and things speed up <em>a lot</em>.</p>
+        <div class="callout">// the bigger the data, the more indexes earn their keep</div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-line"><span class="tag">// course summary</span> &nbsp;·&nbsp; backend with javascript &nbsp;·&nbsp; the basics that stick</div>
+  <div>by <span class="author">Sara Gramstad</span> &nbsp;·&nbsp; 2026-05-08 <span class="cursor"></span></div>
+</footer>
+
+</body>
+</html>
