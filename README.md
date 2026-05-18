@@ -12,9 +12,7 @@
 ╚══════════════════════════════════════════════════════╝
 ```
 
-A quick tour of what we covered in the course — JavaScript fundamentals, how Express handles the back-end, and how databases store all the stuff that matters.
-
-Nothing fancy, just the bits worth remembering. If you're a classmate skimming for revision or a friend wondering what I've been up to — this is it. *Make sense?* Cool.
+A walkthrough of the fundamentals — JavaScript, Express, and databases. The things that actually matter once the syntax stops feeling foreign.
 
 🔗 **[View the live site →](https://saragram-ux.github.io/backend-js-summary/)**
 
@@ -75,7 +73,7 @@ The aesthetic is cyberpunk / retro-terminal — neon on near-black, scanline ove
 
 ## Author
 
-**Sara Gramstad** — `2026-05-08`
+**Sara Gramstad**
 
 Backend with JavaScript course summary.
 
